@@ -11,7 +11,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/CapacitorSet/yara-parser/data"
+    "github.com/honeytrap/yara-parser/data"
 )
 
 // Necessary types for flexgo
@@ -1406,8 +1406,7 @@ case 55:
 
   // NOTE: textBuilder.String() will end with `"` char
   collectText = false
-  yylval.s = "\"" + textBuilder.String()
-  // yylval.s = strings.TrimSuffix(textBuilder.String(), `"`)
+  yylval.Rs = data.RawString(strings.TrimSuffix(textBuilder.String(), `"`))
 
   yy.start = 1 + 2*  (yyInitial );
 

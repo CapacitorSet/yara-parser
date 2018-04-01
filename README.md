@@ -16,7 +16,7 @@ For the following `go get` commands, if you experience any issues, they are like
 
 Use the following command to install the grammar library for deserializing YARA rulesets.
 
-`go get -u github.com/CapacitorSet/yara-parser/grammar`
+`go get -u github.com/honeytrap/yara-parser/grammar`
 
 ## Go Usage
 
@@ -30,7 +30,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/CapacitorSet/yara-parser/grammar"
+	"github.com/honeytrap/yara-parser/grammar"
 )
 
 func main() {

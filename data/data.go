@@ -66,9 +66,9 @@ type StringModifiers struct {
 	S        bool `json:"s"` // for regex
 }
 
-type Keyword struct {
-	Name string
-}
+type Keyword string
+
+type RawString string
 
 type Expression struct {
 	Left        interface{}

@@ -6,8 +6,7 @@ import __yyfmt__ "fmt"
 //line grammar/grammar.y:2
 import (
 	"fmt"
-
-	"github.com/CapacitorSet/yara-parser/data"
+	"github.com/honeytrap/yara-parser/data"
 )
 
 var ParsedRuleset data.RuleSet
@@ -17,7 +16,7 @@ type regexPair struct {
 	mods data.StringModifiers
 }
 
-//line grammar/grammar.y:100
+//line grammar/grammar.y:99
 type xxSymType struct {
 	yys int
 	f64 float64
@@ -33,6 +32,7 @@ type xxSymType struct {
 	mp      data.Meta
 	mps     data.Metas
 	r       data.Range
+	Rs      data.RawString
 	reg     regexPair
 	rm      data.RuleModifiers
 	strset  data.StringSet
@@ -910,7 +910,7 @@ xxdefault:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
 		//line grammar/grammar.y:294
 		{
-			xxVAL.mp = data.Meta{xxDollar[1].s, xxDollar[3].s}
+			xxVAL.mp = data.Meta{xxDollar[1].s, xxDollar[3].Rs}
 		}
 	case 25:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
@@ -1262,7 +1262,7 @@ xxdefault:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
 		//line grammar/grammar.y:561
 		{
-			xxVAL.strset = data.StringSet{Keyword: data.Keyword{Name: "them"}}
+			xxVAL.strset = data.StringSet{Keyword: data.Keyword("them")}
 		}
 	case 81:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
@@ -1298,13 +1298,13 @@ xxdefault:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
 		//line grammar/grammar.y:597
 		{
-			xxVAL.fexpr = data.ForExpression{Keyword: data.Keyword{Name: "all"}}
+			xxVAL.fexpr = data.ForExpression{Keyword: data.Keyword("all")}
 		}
 	case 87:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
 		//line grammar/grammar.y:601
 		{
-			xxVAL.fexpr = data.ForExpression{Keyword: data.Keyword{Name: "any"}}
+			xxVAL.fexpr = data.ForExpression{Keyword: data.Keyword("any")}
 		}
 	case 88:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
@@ -1316,13 +1316,13 @@ xxdefault:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
 		//line grammar/grammar.y:613
 		{
-			xxVAL.expr = data.Expression{Left: data.Keyword{Name: "filesize"}}
+			xxVAL.expr = data.Expression{Left: data.Keyword("filesize")}
 		}
 	case 90:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
 		//line grammar/grammar.y:617
 		{
-			xxVAL.expr = data.Expression{Left: data.Keyword{Name: "entrypoint"}}
+			xxVAL.expr = data.Expression{Left: data.Keyword("entrypoint")}
 		}
 	case 91:
 		xxDollar = xxS[xxpt-4 : xxpt+1]
@@ -1347,7 +1347,7 @@ xxdefault:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
 		//line grammar/grammar.y:634
 		{
-			xxVAL.expr = data.Expression{Left: xxDollar[1].s}
+			xxVAL.expr = data.Expression{Left: xxDollar[1].Rs}
 		}
 	case 95:
 		xxDollar = xxS[xxpt-1 : xxpt+1]

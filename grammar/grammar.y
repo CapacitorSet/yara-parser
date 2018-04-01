@@ -3,8 +3,7 @@ package grammar
 
 import (
     "fmt"
-
-    "github.com/CapacitorSet/yara-parser/data"
+    "github.com/honeytrap/yara-parser/data"
 )
 
 var ParsedRuleset data.RuleSet
@@ -32,7 +31,7 @@ type regexPair struct {
 %token <i64> _NUMBER_
 %token <f64> _DOUBLE_
 %token <s> _INTEGER_FUNCTION_
-%token <s> _TEXT_STRING_
+%token <Rs> _TEXT_STRING_
 %token <s> _HEX_STRING_
 %token <reg> _REGEXP_
 %token <mod> _ASCII_
@@ -111,6 +110,7 @@ type regexPair struct {
     mp            data.Meta
     mps           data.Metas
     r             data.Range
+    Rs            data.RawString
     reg           regexPair
     rm            data.RuleModifiers
     strset        data.StringSet
@@ -135,7 +135,7 @@ rules
         ParsedRuleset.Imports = append(ParsedRuleset.Imports, $2)
     }
     | rules _INCLUDE_ _TEXT_STRING_ {
-        ParsedRuleset.Includes = append(ParsedRuleset.Includes, $3)
+        ParsedRuleset.Includes = append(ParsedRuleset.Includes, $<s>3)
     }
     ;
 
@@ -143,7 +143,7 @@ rules
 import
     : _IMPORT_ _TEXT_STRING_
       {
-          $$ = $2
+          $$ = $<s>2
       }
     ;
 
@@ -327,7 +327,7 @@ string_declaration
       }
       _TEXT_STRING_ string_modifiers
       {
-          $<ys>3.Text = $4
+          $<ys>3.Text = $<s>4
           $<ys>3.Modifiers = $5
 
           $$ = $<ys>3
@@ -559,7 +559,7 @@ string_set
       }
     | _THEM_
       {
-        $$ = data.StringSet{Keyword: data.Keyword{Name: "them"}}
+        $$ = data.StringSet{Keyword: data.Keyword("them")}
       }
     ;
 
@@ -595,11 +595,11 @@ for_expression
       }
     | _ALL_
       {
-        $$ = data.ForExpression{Keyword: data.Keyword{Name: "all"}}
+        $$ = data.ForExpression{Keyword: data.Keyword("all")}
       }
     | _ANY_
       {
-        $$ = data.ForExpression{Keyword: data.Keyword{Name: "any"}}
+        $$ = data.ForExpression{Keyword: data.Keyword("any")}
       }
     ;
 
@@ -611,11 +611,11 @@ primary_expression
       }
     | _FILESIZE_
       {
-        $$ = data.Expression{Left: data.Keyword{Name: "filesize"}}
+        $$ = data.Expression{Left: data.Keyword("filesize")}
       }
     | _ENTRYPOINT_
       {
-        $$ = data.Expression{Left: data.Keyword{Name: "entrypoint"}}
+        $$ = data.Expression{Left: data.Keyword("entrypoint")}
       }
     | _INTEGER_FUNCTION_ '(' primary_expression ')'
       {

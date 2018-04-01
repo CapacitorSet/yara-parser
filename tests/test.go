@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/CapacitorSet/yara-parser/data"
-	"github.com/CapacitorSet/yara-parser/grammar"
+	"github.com/honeytrap/yara-parser/data"
+	"github.com/honeytrap/yara-parser/grammar"
 )
 
 // These are just utilities
