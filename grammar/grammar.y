@@ -4,18 +4,13 @@ package grammar
 import (
     "fmt"
 
-    "github.com/CapacitorSet/yara-parser/data"
+    "github.com/honeytrap/yara-parser/data"
 )
 
 var (
     ParsedRuleset data.RuleSet
     currentRule   *data.Rule
 )
-
-type regexPair struct {
-    text string
-    mods data.StringModifiers
-}
 
 %}
 
@@ -115,7 +110,7 @@ type regexPair struct {
     mp            data.Meta
     mps           data.Metas
     r             data.Range
-    reg           regexPair
+    reg           data.RegexPair
     rm            data.RuleModifiers
     strset        data.StringSet
     strcnt        data.StringCount
@@ -348,10 +343,10 @@ string_declaration
       }
       _REGEXP_ string_modifiers
       {
-          $<ys>3.Text = $4.text
+          $<ys>3.Text = $4.Text
 
-          $5.I = $4.mods.I
-          $5.S = $4.mods.S
+          $5.I = $4.Mods.I
+          $5.S = $4.Mods.S
 
           $<ys>3.Modifiers = $5
 

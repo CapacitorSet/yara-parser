@@ -7,17 +7,15 @@ import __yyfmt__ "fmt"
 import (
 	"fmt"
 
-	"github.com/CapacitorSet/yara-parser/data"
+	"github.com/honeytrap/yara-parser/data"
 )
 
-var ParsedRuleset data.RuleSet
+var (
+	ParsedRuleset data.RuleSet
+	currentRule   *data.Rule
+)
 
-type regexPair struct {
-	text string
-	mods data.StringModifiers
-}
-
-//line grammar/grammar.y:100
+//line grammar/grammar.y:98
 type xxSymType struct {
 	yys int
 	f64 float64
@@ -34,7 +32,7 @@ type xxSymType struct {
 	mp      data.Meta
 	mps     data.Metas
 	r       data.Range
-	reg     regexPair
+	reg     data.RegexPair
 	rm      data.RuleModifiers
 	strset  data.StringSet
 	strcnt  data.StringCount
@@ -179,7 +177,7 @@ const xxEofCode = 1
 const xxErrCode = 2
 const xxInitialStackSize = 16
 
-//line grammar/grammar.y:717
+//line grammar/grammar.y:731
 
 //line yacctab:1
 var xxExca = [...]int{
@@ -729,31 +727,31 @@ xxdefault:
 
 	case 2:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:132
+		//line grammar/grammar.y:130
 		{
 			ParsedRuleset.Rules = append(ParsedRuleset.Rules, xxDollar[2].yr)
 		}
 	case 3:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:135
+		//line grammar/grammar.y:133
 		{
 			ParsedRuleset.Imports = append(ParsedRuleset.Imports, xxDollar[2].s)
 		}
 	case 4:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:138
+		//line grammar/grammar.y:136
 		{
 			ParsedRuleset.Includes = append(ParsedRuleset.Includes, xxDollar[3].s)
 		}
 	case 5:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:146
+		//line grammar/grammar.y:144
 		{
 			xxVAL.s = xxDollar[2].s
 		}
 	case 6:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:154
+		//line grammar/grammar.y:152
 		{
 			xxVAL.yr.Modifiers = xxDollar[1].rm
 			xxVAL.yr.Identifier = xxDollar[3].s
@@ -768,7 +766,7 @@ xxdefault:
 		}
 	case 7:
 		xxDollar = xxS[xxpt-8 : xxpt+1]
-		//line grammar/grammar.y:167
+		//line grammar/grammar.y:165
 		{
 			// $4 is the rule created in above action
 			xxDollar[4].yr.Tags = xxDollar[5].ss
@@ -804,23 +802,28 @@ xxdefault:
 				}
 				idx[s.ID] = struct{}{}
 			}
+
+			// So we can refer to this rule while parsing condition.
+			// Ptr changes in every action, so be careful...
+			currentRule = &xxDollar[4].yr
 		}
 	case 8:
 		xxDollar = xxS[xxpt-11 : xxpt+1]
-		//line grammar/grammar.y:204
+		//line grammar/grammar.y:206
 		{
 			xxDollar[4].yr.Condition = xxDollar[10].expr
 			xxVAL.yr = xxDollar[4].yr
+			currentRule = nil // Done with this rule
 		}
 	case 9:
 		xxDollar = xxS[xxpt-0 : xxpt+1]
-		//line grammar/grammar.y:213
+		//line grammar/grammar.y:216
 		{
 
 		}
 	case 10:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:217
+		//line grammar/grammar.y:220
 		{
 			xxVAL.m = make(data.Metas, 0, len(xxDollar[3].mps))
 			for _, mpair := range xxDollar[3].mps {
@@ -830,135 +833,135 @@ xxdefault:
 		}
 	case 11:
 		xxDollar = xxS[xxpt-0 : xxpt+1]
-		//line grammar/grammar.y:229
+		//line grammar/grammar.y:232
 		{
 			xxVAL.yss = data.Strings{}
 		}
 	case 12:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:233
+		//line grammar/grammar.y:236
 		{
 			xxVAL.yss = xxDollar[3].yss
 		}
 	case 13:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:241
+		//line grammar/grammar.y:244
 		{
 			xxVAL.expr = xxDollar[3].expr
 		}
 	case 14:
 		xxDollar = xxS[xxpt-0 : xxpt+1]
-		//line grammar/grammar.y:248
+		//line grammar/grammar.y:251
 		{
 			xxVAL.rm = data.RuleModifiers{}
 		}
 	case 15:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:249
+		//line grammar/grammar.y:252
 		{
 			xxVAL.rm.Private = xxVAL.rm.Private || xxDollar[2].rm.Private
 			xxVAL.rm.Global = xxVAL.rm.Global || xxDollar[2].rm.Global
 		}
 	case 16:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:257
+		//line grammar/grammar.y:260
 		{
 			xxVAL.rm.Private = true
 		}
 	case 17:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:258
+		//line grammar/grammar.y:261
 		{
 			xxVAL.rm.Global = true
 		}
 	case 18:
 		xxDollar = xxS[xxpt-0 : xxpt+1]
-		//line grammar/grammar.y:264
+		//line grammar/grammar.y:267
 		{
 			xxVAL.ss = []string{}
 		}
 	case 19:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:268
+		//line grammar/grammar.y:271
 		{
 			xxVAL.ss = xxDollar[2].ss
 		}
 	case 20:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:276
+		//line grammar/grammar.y:279
 		{
 			xxVAL.ss = []string{xxDollar[1].s}
 		}
 	case 21:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:280
+		//line grammar/grammar.y:283
 		{
 			xxVAL.ss = append(xxDollar[1].ss, xxDollar[2].s)
 		}
 	case 22:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:288
+		//line grammar/grammar.y:291
 		{
 			xxVAL.mps = data.Metas{xxDollar[1].mp}
 		}
 	case 23:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:289
+		//line grammar/grammar.y:292
 		{
 			xxVAL.mps = append(xxVAL.mps, xxDollar[2].mp)
 		}
 	case 24:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:295
+		//line grammar/grammar.y:298
 		{
 			xxVAL.mp = data.Meta{xxDollar[1].s, xxDollar[3].s}
 		}
 	case 25:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:299
+		//line grammar/grammar.y:302
 		{
 			xxVAL.mp = data.Meta{xxDollar[1].s, xxDollar[3].i64}
 		}
 	case 26:
 		xxDollar = xxS[xxpt-4 : xxpt+1]
-		//line grammar/grammar.y:303
+		//line grammar/grammar.y:306
 		{
 			xxVAL.mp = data.Meta{xxDollar[1].s, -xxDollar[4].i64}
 		}
 	case 27:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:307
+		//line grammar/grammar.y:310
 		{
 			xxVAL.mp = data.Meta{xxDollar[1].s, true}
 		}
 	case 28:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:311
+		//line grammar/grammar.y:314
 		{
 			xxVAL.mp = data.Meta{xxDollar[1].s, false}
 		}
 	case 29:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:318
+		//line grammar/grammar.y:321
 		{
 			xxVAL.yss = data.Strings{xxDollar[1].ys}
 		}
 	case 30:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:319
+		//line grammar/grammar.y:322
 		{
 			xxVAL.yss = append(xxDollar[1].yss, xxDollar[2].ys)
 		}
 	case 31:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:325
+		//line grammar/grammar.y:328
 		{
 			xxVAL.ys.Type = data.TypeString
 			xxVAL.ys.ID = xxDollar[1].s
 		}
 	case 32:
 		xxDollar = xxS[xxpt-5 : xxpt+1]
-		//line grammar/grammar.y:330
+		//line grammar/grammar.y:333
 		{
 			xxDollar[3].ys.Text = xxDollar[4].s
 			xxDollar[3].ys.Modifiers = xxDollar[5].mod
@@ -967,19 +970,19 @@ xxdefault:
 		}
 	case 33:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:337
+		//line grammar/grammar.y:340
 		{
 			xxVAL.ys.Type = data.TypeRegex
 			xxVAL.ys.ID = xxDollar[1].s
 		}
 	case 34:
 		xxDollar = xxS[xxpt-5 : xxpt+1]
-		//line grammar/grammar.y:342
+		//line grammar/grammar.y:345
 		{
-			xxDollar[3].ys.Text = xxDollar[4].reg.text
+			xxDollar[3].ys.Text = xxDollar[4].reg.Text
 
-			xxDollar[5].mod.I = xxDollar[4].reg.mods.I
-			xxDollar[5].mod.S = xxDollar[4].reg.mods.S
+			xxDollar[5].mod.I = xxDollar[4].reg.Mods.I
+			xxDollar[5].mod.S = xxDollar[4].reg.Mods.S
 
 			xxDollar[3].ys.Modifiers = xxDollar[5].mod
 
@@ -987,7 +990,7 @@ xxdefault:
 		}
 	case 35:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:353
+		//line grammar/grammar.y:356
 		{
 			xxVAL.ys.Type = data.TypeHexString
 			xxVAL.ys.ID = xxDollar[1].s
@@ -995,13 +998,13 @@ xxdefault:
 		}
 	case 36:
 		xxDollar = xxS[xxpt-0 : xxpt+1]
-		//line grammar/grammar.y:362
+		//line grammar/grammar.y:365
 		{
 			xxVAL.mod = data.StringModifiers{}
 		}
 	case 37:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:365
+		//line grammar/grammar.y:368
 		{
 			xxVAL.mod = data.StringModifiers{
 				Wide:     xxDollar[1].mod.Wide || xxDollar[2].mod.Wide,
@@ -1012,456 +1015,467 @@ xxdefault:
 		}
 	case 38:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:377
+		//line grammar/grammar.y:380
 		{
 			xxVAL.mod.Wide = true
 		}
 	case 39:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:378
+		//line grammar/grammar.y:381
 		{
 			xxVAL.mod.ASCII = true
 		}
 	case 40:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:379
+		//line grammar/grammar.y:382
 		{
 			xxVAL.mod.Nocase = true
 		}
 	case 41:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:380
+		//line grammar/grammar.y:383
 		{
 			xxVAL.mod.Fullword = true
 		}
 	case 42:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:386
+		//line grammar/grammar.y:389
 		{
 
 		}
 	case 43:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:390
+		//line grammar/grammar.y:393
 		{
 
 		}
 	case 44:
 		xxDollar = xxS[xxpt-4 : xxpt+1]
-		//line grammar/grammar.y:394
+		//line grammar/grammar.y:397
 		{
 
 		}
 	case 45:
 		xxDollar = xxS[xxpt-4 : xxpt+1]
-		//line grammar/grammar.y:399
+		//line grammar/grammar.y:402
 		{
 
 		}
 	case 46:
 		xxDollar = xxS[xxpt-0 : xxpt+1]
-		//line grammar/grammar.y:406
+		//line grammar/grammar.y:409
 		{
 		}
 	case 47:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:407
+		//line grammar/grammar.y:410
 		{
 		}
 	case 48:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:412
+		//line grammar/grammar.y:415
 		{
 
 		}
 	case 49:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:416
+		//line grammar/grammar.y:419
 		{
 
 		}
 	case 50:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:424
+		//line grammar/grammar.y:427
 		{
 
 		}
 	case 51:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:432
+		//line grammar/grammar.y:435
 		{
 			xxVAL.expr = xxDollar[1].expr
 		}
 	case 52:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:439
+		//line grammar/grammar.y:442
 		{
 			xxVAL.expr = data.Expression{Left: true}
 		}
 	case 53:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:443
+		//line grammar/grammar.y:446
 		{
 			xxVAL.expr = data.Expression{Left: false}
 		}
 	case 54:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:447
+		//line grammar/grammar.y:450
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: "matches", Right: xxDollar[3].reg}
 		}
 	case 55:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:451
+		//line grammar/grammar.y:454
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: "contains", Right: xxDollar[3].expr}
 		}
 	case 56:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:455
+		//line grammar/grammar.y:458
 		{
+			var declared bool
+			for _, s := range currentRule.Strings {
+				if s.ID == xxDollar[1].s {
+					declared = true
+					break
+				}
+			}
+			if !declared {
+				err := fmt.Errorf(`Undefined string identifier "%s"`, xxDollar[1].s)
+				panic(err)
+			}
 			xxVAL.expr = data.Expression{Left: data.TemporaryString{Identifier: xxDollar[1].s}}
 		}
 	case 57:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:459
+		//line grammar/grammar.y:473
 		{
 			xxVAL.expr = data.Expression{Left: data.TemporaryString{Identifier: xxDollar[1].s}, Operator: "at", Right: xxDollar[3].expr}
 		}
 	case 58:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:463
+		//line grammar/grammar.y:477
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].s, Operator: "in", Right: xxDollar[3].r}
 		}
 	case 59:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:467
+		//line grammar/grammar.y:481
 		{
 			// Unused: https://github.com/Northern-Lights/yara-parser/issues/12#issuecomment-376379471
 			// tldr: the "error" is used to help recover from errors, but we don't need this
 		}
 	case 60:
 		xxDollar = xxS[xxpt-9 : xxpt+1]
-		//line grammar/grammar.y:472
+		//line grammar/grammar.y:486
 		{
 			xxVAL.expr = data.Expression{Left: data.ForInExpression{ForExpression: xxDollar[2].fexpr, Identifier: xxDollar[3].s, IntegerSet: xxDollar[5].intset, Boolean: xxDollar[8].expr}}
 		}
 	case 61:
 		xxDollar = xxS[xxpt-8 : xxpt+1]
-		//line grammar/grammar.y:476
+		//line grammar/grammar.y:490
 		{
 			xxVAL.expr = data.Expression{Left: data.ForOfExpression{ForExpression: xxDollar[2].fexpr, StringSet: xxDollar[4].strset, Boolean: xxDollar[7].expr}}
 		}
 	case 62:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:480
+		//line grammar/grammar.y:494
 		{
 			//$$ = data.Expression{Left: data.ForOfExpression{ForExpression: $2, StringSet: $4}}
 		}
 	case 63:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:484
+		//line grammar/grammar.y:498
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[2].expr, Operator: "not"}
 		}
 	case 64:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:488
+		//line grammar/grammar.y:502
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: "and", Right: xxDollar[3].expr}
 		}
 	case 65:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:492
+		//line grammar/grammar.y:506
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: "or", Right: xxDollar[3].expr}
 		}
 	case 66:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:496
+		//line grammar/grammar.y:510
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: "<", Right: xxDollar[3].expr}
 		}
 	case 67:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:500
+		//line grammar/grammar.y:514
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: ">", Right: xxDollar[3].expr}
 		}
 	case 68:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:504
+		//line grammar/grammar.y:518
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: "<=", Right: xxDollar[3].expr}
 		}
 	case 69:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:508
+		//line grammar/grammar.y:522
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: ">=", Right: xxDollar[3].expr}
 		}
 	case 70:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:512
+		//line grammar/grammar.y:526
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: "==", Right: xxDollar[3].expr}
 		}
 	case 71:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:516
+		//line grammar/grammar.y:530
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: "!=", Right: xxDollar[3].expr}
 		}
 	case 72:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:520
+		//line grammar/grammar.y:534
 		{
 			xxVAL.expr = xxDollar[1].expr
 		}
 	case 73:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:524
+		//line grammar/grammar.y:538
 		{
 			xxVAL.expr = xxDollar[2].expr
 		}
 	case 74:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:531
+		//line grammar/grammar.y:545
 		{
 		}
 	case 75:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:532
+		//line grammar/grammar.y:546
 		{
 		}
 	case 76:
 		xxDollar = xxS[xxpt-5 : xxpt+1]
-		//line grammar/grammar.y:538
+		//line grammar/grammar.y:552
 		{
 			xxVAL.r = data.Range{From: xxDollar[2].expr, To: xxDollar[4].expr}
 		}
 	case 77:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:546
+		//line grammar/grammar.y:560
 		{
 
 		}
 	case 78:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:550
+		//line grammar/grammar.y:564
 		{
 
 		}
 	case 79:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:558
+		//line grammar/grammar.y:572
 		{
 			xxVAL.strset = data.StringSet{Array: xxDollar[2].ss}
 		}
 	case 80:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:562
+		//line grammar/grammar.y:576
 		{
 			xxVAL.strset = data.StringSet{Keyword: xxDollar[1].kw}
 		}
 	case 81:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:570
+		//line grammar/grammar.y:584
 		{
 			xxVAL.ss = []string{xxDollar[1].s}
 		}
 	case 82:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:574
+		//line grammar/grammar.y:588
 		{
 			xxVAL.ss = append(xxDollar[1].ss, xxDollar[3].s)
 		}
 	case 83:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:582
+		//line grammar/grammar.y:596
 		{
 			xxVAL.s = xxDollar[1].s
 		}
 	case 84:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:586
+		//line grammar/grammar.y:600
 		{
 			xxVAL.s = xxDollar[1].s
 		}
 	case 85:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:594
+		//line grammar/grammar.y:608
 		{
 			xxVAL.fexpr = data.ForExpression{Expression: xxDollar[1].expr}
 		}
 	case 86:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:598
+		//line grammar/grammar.y:612
 		{
 			xxVAL.fexpr = data.ForExpression{Keyword: xxDollar[1].kw}
 		}
 	case 87:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:602
+		//line grammar/grammar.y:616
 		{
 			xxVAL.fexpr = data.ForExpression{Keyword: xxDollar[1].kw}
 		}
 	case 88:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:610
+		//line grammar/grammar.y:624
 		{
 			xxVAL.expr = xxDollar[2].expr
 		}
 	case 89:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:614
+		//line grammar/grammar.y:628
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].kw}
 		}
 	case 90:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:618
+		//line grammar/grammar.y:632
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].kw}
 		}
 	case 91:
 		xxDollar = xxS[xxpt-4 : xxpt+1]
-		//line grammar/grammar.y:622
+		//line grammar/grammar.y:636
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].s, Operator: data.OperatorIntegerFunction, Right: xxDollar[3].expr}
 		}
 	case 92:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:626
+		//line grammar/grammar.y:640
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].i64}
 		}
 	case 93:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:630
+		//line grammar/grammar.y:644
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].f64}
 		}
 	case 94:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:634
+		//line grammar/grammar.y:648
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].s}
 		}
 	case 95:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:638
+		//line grammar/grammar.y:652
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].strcnt}
 		}
 	case 96:
 		xxDollar = xxS[xxpt-4 : xxpt+1]
-		//line grammar/grammar.y:642
+		//line grammar/grammar.y:656
 		{
 			xxDollar[1].stroff.Index = xxDollar[3].expr
 			xxVAL.expr = data.Expression{Left: xxDollar[1].stroff}
 		}
 	case 97:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:647
+		//line grammar/grammar.y:661
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].stroff}
 		}
 	case 98:
 		xxDollar = xxS[xxpt-4 : xxpt+1]
-		//line grammar/grammar.y:651
+		//line grammar/grammar.y:665
 		{
 			xxDollar[1].strlen.Index = xxDollar[3].expr
 			xxVAL.expr = data.Expression{Left: xxDollar[1].strlen}
 		}
 	case 99:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:656
+		//line grammar/grammar.y:670
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].strlen}
 		}
 	case 100:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:660
+		//line grammar/grammar.y:674
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].s}
 		}
 	case 101:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:664
+		//line grammar/grammar.y:678
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[2].expr, Operator: data.OperatorUnaryMinus}
 		}
 	case 102:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:668
+		//line grammar/grammar.y:682
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorPlus, Right: xxDollar[3].expr}
 		}
 	case 103:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:672
+		//line grammar/grammar.y:686
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorMinus, Right: xxDollar[3].expr}
 		}
 	case 104:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:676
+		//line grammar/grammar.y:690
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorTimes, Right: xxDollar[3].expr}
 		}
 	case 105:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:680
+		//line grammar/grammar.y:694
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorDivide, Right: xxDollar[3].expr}
 		}
 	case 106:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:684
+		//line grammar/grammar.y:698
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorModulo, Right: xxDollar[3].expr}
 		}
 	case 107:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:688
+		//line grammar/grammar.y:702
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorXor, Right: xxDollar[3].expr}
 		}
 	case 108:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:692
+		//line grammar/grammar.y:706
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorBitwiseAnd, Right: xxDollar[3].expr}
 		}
 	case 109:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:696
+		//line grammar/grammar.y:710
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorBitwiseOr, Right: xxDollar[3].expr}
 		}
 	case 110:
 		xxDollar = xxS[xxpt-2 : xxpt+1]
-		//line grammar/grammar.y:700
+		//line grammar/grammar.y:714
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[2].expr, Operator: data.OperatorBitwiseNot}
 		}
 	case 111:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:704
+		//line grammar/grammar.y:718
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorShiftLeft, Right: xxDollar[3].expr}
 		}
 	case 112:
 		xxDollar = xxS[xxpt-3 : xxpt+1]
-		//line grammar/grammar.y:708
+		//line grammar/grammar.y:722
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].expr, Operator: data.OperatorShiftRight, Right: xxDollar[3].expr}
 		}
 	case 113:
 		xxDollar = xxS[xxpt-1 : xxpt+1]
-		//line grammar/grammar.y:712
+		//line grammar/grammar.y:726
 		{
 			xxVAL.expr = data.Expression{Left: xxDollar[1].reg}
 		}

@@ -157,3 +157,8 @@ type Range struct {
 type TemporaryString struct {
 	Identifier string
 }
+
+type RegexPair struct {
+    Text string
+    Mods StringModifiers
+}

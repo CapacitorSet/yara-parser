@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/CapacitorSet/yara-parser/data"
+	"github.com/honeytrap/yara-parser/data"
 )
 
 var errParser error

@@ -11,7 +11,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/CapacitorSet/yara-parser/data"
+    "github.com/honeytrap/yara-parser/data"
 )
 
 // Necessary types for flexgo
@@ -1555,7 +1555,7 @@ case 64:
       }
   }
 
-  yylval.reg = regexPair {
+  yylval.reg = data.RegexPair {
       txt,
       mods,
   }
