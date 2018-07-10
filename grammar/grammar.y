@@ -99,6 +99,7 @@ var (
     f64           float64
     i64           int64
     s             string
+    rs            data.RawString
     ss            []string
 
     expr          data.Expression

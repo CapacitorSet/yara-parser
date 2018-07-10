@@ -158,6 +158,8 @@ type TemporaryString struct {
 	Identifier string
 }
 
+type RawString string
+
 type RegexPair struct {
     Text string
     Mods StringModifiers

@@ -269,7 +269,7 @@ u?int(8|16|32)(be)? {
 
   // NOTE: textBuilder.String() will end with `"` char
   collectText = false
-  yylval.s = "\"" + textBuilder.String()
+  yylval.rs = data.RawString("\"" + textBuilder.String())
   // yylval.s = strings.TrimSuffix(textBuilder.String(), `"`)
 
   BEGIN (INITIAL);
